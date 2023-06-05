@@ -1,0 +1,48 @@
+version: '3.7'
+services:
+  api:
+    build:
+      args:
+        user: userx
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: todo-app-api-img
+    container_name: todo-app-api
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - './backend:/var/www'
+    networks:
+      - todoappnet
+  nginx:
+    image: 'nginx:1.17-alpine'
+    container_name: todo-app-nginx
+    restart: unless-stopped
+    ports:
+      - '8001:80'
+    volumes:
+      - './backend:/var/www'
+      - './docker-compose/nginx:/etc/nginx/conf.d'
+    networks:
+      - todoappnet
+  db:
+    image: 'mysql:8.0'
+    container_name: todo-app-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: app_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: app_user
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - './docker-compose/mysql:/docker-entrypoint-initdb.d'
+    networks:
+      - todoappnet
+networks:
+  todoappnet:
+    driver: bridge
