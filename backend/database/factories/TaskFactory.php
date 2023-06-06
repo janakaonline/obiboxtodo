@@ -18,7 +18,8 @@ class TaskFactory extends Factory
             'description' => fake()->text(),
             'priority' => fake()->randomElement(['low', 'medium', 'high']),
             'completed' => fake()->boolean(20),
-            'completed_at' => fake()->dateTime()
+            'completed_at' => fake()->dateTime(),
+            'due_date' => fake()->dateTime()
         ];
     }
 }

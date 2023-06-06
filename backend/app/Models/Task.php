@@ -16,11 +16,13 @@ class Task extends Model
         'name',
         'priority',
         'description',
+        'due_date',
     ];
 
     protected $casts = [
         'completed' => 'boolean',
         'priority' => TaskPriority::class,
+        'due_date' => 'datetime',
         'completed_at' => 'datetime',
     ];
 }

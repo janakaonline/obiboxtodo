@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Enums\SortOrder;
 use App\Enums\TaskPriority;
 use App\Models\Task;
+use App\Models\TaskStats\TaskCountOverview;
 use App\Repositories\TaskRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -223,5 +224,111 @@ class TaskRepositoyTest extends TestCase
         $this->assertFalse($updatedTask->completed);
         $this->assertEmpty($updatedTask->completed_at);
         $this->assertTrue($updatedTask->updated_at->isAfter(Carbon::now()->subSeconds(2)));
+    }
+
+
+    public function test_should_return_incomplete_tasks_of_the_given_date()
+    {
+        Task::factory()->create([
+            'name' => 'task 1',
+            'priority' => TaskPriority::Medium,
+            'description' => 'description',
+            'due_date' => new Carbon('2023-01-23 10:10:00'),
+            'completed' => false,
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->create([
+            'name' => 'task 2',
+            'priority' => TaskPriority::High,
+            'description' => 'description',
+            'due_date' => new Carbon('2023-01-23 23:10:00'),
+            'completed' => false,
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->create([
+            'name' => 'task 3',
+            'priority' => TaskPriority::Medium,
+            'description' => 'description',
+            'due_date' => new Carbon('2023-01-23 08:10:00'),
+            'completed' => true,
+            'completed_at' => new Carbon('2023-01-23 13:15:00'),
+        ]);
+
+        Task::factory()->create([
+            'name' => 'task 4',
+            'priority' => TaskPriority::Low,
+            'description' => 'description',
+            'due_date' => new Carbon('2023-01-24 13:15:00'),
+            'completed' => false,
+            'completed_at' => null,
+        ]);
+
+        $date = new Carbon('2023-01-23 01:00:00');
+        $result = $this->repo->getTasksToDoOn($date);
+
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertCount(2, $result);
+        $this->assertEquals("task 1", $result->first()->name);
+        $this->assertEquals("task 2", $result->last()->name);
+    }
+
+    public function test_getTasksToDoBy_should_return_incomplete_tasks_up_to_the_given_date_by_priority()
+    {
+        Task::factory()->create([
+            'name' => 'task 1',
+            'priority' => TaskPriority::Medium,
+            'description' => 'description',
+            'due_date' => new Carbon('2023-01-23 10:10:00'),
+            'completed' => false,
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->create([
+            'name' => 'task 2',
+            'priority' => TaskPriority::High,
+            'description' => 'description',
+            'due_date' => new Carbon('2023-01-23 23:10:00'),
+            'completed' => false,
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->create([
+            'name' => 'task 3',
+            'priority' => TaskPriority::Medium,
+            'description' => 'description',
+            'due_date' => new Carbon('2023-01-23 08:10:00'),
+            'completed' => true,
+            'completed_at' => new Carbon('2023-01-23 13:15:00'),
+        ]);
+
+        Task::factory()->create([
+            'name' => 'task 4',
+            'priority' => TaskPriority::Low,
+            'description' => 'description',
+            'due_date' => new Carbon('2023-01-24 13:15:00'),
+            'completed' => false,
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->create([
+            'name' => 'task 6',
+            'priority' => TaskPriority::Low,
+            'description' => 'description',
+            'due_date' => new Carbon('2023-01-23 22:10:00'),
+            'completed' => false,
+            'completed_at' => null,
+        ]);
+
+        $date = new Carbon('2023-01-23 01:00:00');
+        $result = $this->repo->getTasksToDoOn($date, SortOrder::Desending);
+
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertCount(3, $result);
+        $this->assertEquals("task 2", $result->first()->name);
+        $this->assertEquals(TaskPriority::High, $result->first()->priority);
+        $this->assertEquals("task 6", $result->last()->name);
+        $this->assertEquals(TaskPriority::Low, $result->last()->priority);
     }
 }

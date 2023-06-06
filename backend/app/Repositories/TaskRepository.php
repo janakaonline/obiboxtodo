@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 
-use function PHPUnit\Framework\isNull;
-
 /**
  * Defines functionlity of the task repository
  * Responsible of manage underlying DB logic related to Task model
@@ -46,6 +44,51 @@ class TaskRepository implements ITaskRepository
         if (!empty($sortCreatedAt)) {
             $model->orderBy('created_at', $sortCreatedAt->value);
         }
+
+        return $model->get();
+    }
+
+    /**
+     * returns incomplete tasks on the given date
+     *
+     * @return Collection collections of tasks retrieved
+     */
+    public function getTasksToDoOn(Carbon $date, ?SortOrder $sortByPriority = null): Collection
+    {
+        $model = Task::where('completed', false);
+
+        if (!is_null($date)) {
+            $model->where('due_date', '>=', $date->copy()->startOfDay())
+                ->where('due_date', '<=', $date->copy()->endOfDay());
+        }
+
+        if ($sortByPriority) {
+            $priorityOrderString = "'" . TaskPriority::Low->value . "', '" . TaskPriority::Medium->value . "', '" . TaskPriority::High->value . "'";
+            $model->orderByRaw("FIELD(priority, $priorityOrderString) {$sortByPriority->value}");
+        }
+
+
+        return $model->get();
+    }
+
+    /**
+     * returns overdue tasks by the given date
+     *
+     * @return Collection collections of tasks retrieved
+     */
+    public function getOverdueTasksBy(Carbon $date, ?SortOrder $sortByPriority = null): Collection
+    {
+        $model = Task::where('completed', false);
+
+        if (!is_null($date)) {
+            $model->where('due_date', '<', $date->copy()->startOfDay());
+        }
+
+        if ($sortByPriority) {
+            $priorityOrderString = "'" . TaskPriority::Low->value . "', '" . TaskPriority::Medium->value . "', '" . TaskPriority::High->value . "'";
+            $model->orderByRaw("FIELD(priority, $priorityOrderString) {$sortByPriority->value}");
+        }
+
 
         return $model->get();
     }
@@ -88,7 +131,7 @@ class TaskRepository implements ITaskRepository
     public function markAsComplete(Task $task): bool
     {
         // if the task is already completed, skip the update
-        if($task->completed === true){
+        if ($task->completed === true) {
             return true;
         }
 
@@ -105,7 +148,7 @@ class TaskRepository implements ITaskRepository
     public function markAsInComplete(Task $task): bool
     {
         // if the task is already incomplete, skip the update
-        if($task->completed === false){
+        if ($task->completed === false) {
             return true;
         }
 
@@ -117,7 +160,7 @@ class TaskRepository implements ITaskRepository
     /**
      * remove the task entry
      *
-     * @return bool if the update is successful or not
+     * @return bool if the deletion is successful or not
      */
     public function delete(Task $task): bool
     {
