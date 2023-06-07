@@ -122,12 +122,14 @@ class TaskRepositoyTest extends TestCase
 
     public function test_should_create_a_task_with_the_given_data_successfully()
     {
-        $this->repo->create('test task', TaskPriority::High, "some description");
+        $dueDate =  new Carbon('2023-12-10');
+        $this->repo->create('test task', TaskPriority::High, $dueDate, "some description");
 
         $result = Task::all();
         $this->assertCount(1, $result->toArray());
         $this->assertEquals('test task', $result[0]->name);
         $this->assertEquals(TaskPriority::High, $result[0]->priority);
+        $this->assertTrue($dueDate->equalTo($result[0]->due_date));
         $this->assertEquals('some description', $result[0]->description);
         $this->assertFalse($result[0]->completed);
         $this->assertNotEmpty($result[0]->created_at);
@@ -139,17 +141,20 @@ class TaskRepositoyTest extends TestCase
             'name' => 'task 1',
             'priority' => TaskPriority::Medium,
             'description' => 'wrong description',
+            'due_date' => new Carbon('2023-10-20'),
         ]);
 
+        $dueDate =  new Carbon('2023-12-10');
         $task = Task::first();
 
-        $result = $this->repo->update($task, 'new task name', TaskPriority::High, 'new description');
+        $result = $this->repo->update($task, 'new task name', TaskPriority::High, $dueDate, 'new description');
         $this->assertTrue($result);
 
         $updatedTask = Task::first();
         $this->assertEquals('new task name', $updatedTask->name);
         $this->assertEquals(TaskPriority::High, $updatedTask->priority);
         $this->assertEquals('new description', $updatedTask->description);
+        $this->assertTrue($dueDate->equalTo($updatedTask->due_date));
     }
 
     public function test_should_mark_a_task_as_completed_successfully()

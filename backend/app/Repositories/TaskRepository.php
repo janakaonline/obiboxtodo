@@ -49,6 +49,16 @@ class TaskRepository implements ITaskRepository
     }
 
     /**
+     * returns the task by the given ID
+     *
+     * @return Task
+     */
+    public function getTaskByID(int $id): ?Task
+    {
+        return Task::find($id);
+    }
+
+    /**
      * returns incomplete tasks on the given date
      *
      * @return Collection collections of tasks retrieved
@@ -98,11 +108,12 @@ class TaskRepository implements ITaskRepository
      *
      * @return Task created task
      */
-    public function create(string $name, TaskPriority $priority = TaskPriority::Medium, string $description = null): Task
+    public function create(string $name, TaskPriority $priority = TaskPriority::Medium, Carbon $dueDate = null, string $description = null): Task
     {
         return Task::create([
             'name' => $name,
             'priority' => $priority->value,
+            'due_date' => $dueDate,
             'description' => $description
         ]);
     }
@@ -112,12 +123,13 @@ class TaskRepository implements ITaskRepository
      *
      * @return bool if the update is successful or not
      */
-    public function update(Task $task, string $name, TaskPriority $priority, string $description = null): bool
+    public function update(Task $task, string $name, TaskPriority $priority, Carbon $dueDate = null, string $description = null): bool
     {
         $task->fill([
             'name' => $name,
             'priority' => $priority->value,
-            'description' => $description
+            'due_date' => $dueDate,
+            'description' => $description,
         ]);
 
         return $task->save();

@@ -20,6 +20,12 @@ interface ITaskRepository
      */
     public function getTasks(?string $searchTerm = null, ?TaskPriority $priority = null, ?bool $completed = null, ?SortOrder $sortCreatedAt = null): Collection;
 
+    /**
+     * returns the task by the given ID
+     *
+     * @return Task
+     */
+    public function getTaskByID(int $id): ?Task;
 
     /**
      * returns incomplete tasks on the given date
@@ -40,14 +46,14 @@ interface ITaskRepository
      *
      * @return Task created task
      */
-    public function create(string $name, TaskPriority $priority = TaskPriority::Medium, string $description = null): Task;
+    public function create(string $name, TaskPriority $priority = TaskPriority::Medium, Carbon $dueDate = null, string $description = null): Task;
 
     /**
      * update the existing task
      *
      * @return bool if the update is successful or not
      */
-    public function update(Task $task, string $name, TaskPriority $priority, string $description = null): bool;
+    public function update(Task $task, string $name, TaskPriority $priority, Carbon $dueDate = null, string $description = null): bool;
 
     /**
      * mark the task complete

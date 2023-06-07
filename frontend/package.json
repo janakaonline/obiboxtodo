@@ -1,0 +1,40 @@
+{
+  "name": "obibox-todo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "format": "prettier --write src/",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.22.4",
+    "@mdi/font": "^7.2.96",
+    "@vuepic/vue-datepicker": "^5.2.0",
+    "axios": "^1.4.0",
+    "jest-environment-jsdom": "^29.5.0",
+    "vue": "^3.3.2",
+    "vue-router": "^4.2.0",
+    "vuetify": "^3.3.2",
+    "vuex": "^4.0.2"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.2.0",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/eslint-config-prettier": "^7.1.0",
+    "@vue/test-utils": "^2.3.2",
+    "@vue/vue3-jest": "^28.1.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "eslint": "^8.39.0",
+    "eslint-plugin-vue": "^9.11.0",
+    "jest": "^28.1.0",
+    "prettier": "^2.8.8",
+    "sass": "^1.62.1",
+    "sass-loader": "^10.4.1",
+    "typescript": "^5.1.3",
+    "vite": "^4.3.5"
+  }
+}
