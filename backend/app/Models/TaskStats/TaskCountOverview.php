@@ -2,10 +2,12 @@
 
 namespace App\Models\TaskStats;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Collection;
+use JsonSerializable;
 
-class TaskCountOverview implements Jsonable
+class TaskCountOverview implements Jsonable, Arrayable, JsonSerializable
 {
     protected Collection $taskCountList;
 
@@ -30,13 +32,21 @@ class TaskCountOverview implements Jsonable
         return $item ? $item->count : 0;
     }
 
+    public function jsonSerialize(): mixed{
+        return $this->toArray();
+    }
+
     public function toJson($options = 0)
+    {
+        return json_encode($this->toArray(), $options);
+    }
+
+    public function toArray()
     {
         $outputArr = [];
         $this->taskCountList->each(function (TaskCount $item) use (&$outputArr) {
             $outputArr[$item->key] = $item->count;
         });
-
-        return json_encode($outputArr, $options);
+        return $outputArr;
     }
 }

@@ -4,4 +4,9 @@ export default () => ({
         error: null,
         data: null
     },
+    tasksByPriorityData: {
+        loading: false,
+        error: null,
+        data: null
+    },
 })

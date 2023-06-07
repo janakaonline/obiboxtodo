@@ -1,6 +1,21 @@
 export default () => ({
     loadingItems: false,
-    items: [{ 'name': 'item 1', 'description': "dsadsdsadsa", priority: "high" }],
+    items: [],
     loadItemsError: null,
     taskActionError: null,
+    todoTasks:{
+        loadingItems: false,
+        items: [],
+        loadItemsError: null,
+    },
+    overdueTasks:{
+        loadingItems: false,
+        items: [],
+        loadItemsError: null,
+    },
+    completedTasks:{
+        loadingItems: false,
+        items: [],
+        loadItemsError: null,
+    }
 })

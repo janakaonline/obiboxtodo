@@ -119,4 +119,24 @@ class TaskController extends Controller
 
         return response()->json(['data' => $task], Response::HTTP_OK);
     }
+
+    public function tasksDueToday(TasksGetRequest $request)
+    {
+        $dueDate = new Carbon();
+        $sortPriority = SortOrder::tryFrom($request->sort_priority) ?? null;
+
+        $todoItems = $this->taskRepo->getTasksToDoOn($dueDate, $sortPriority);
+
+        return response()->json(['items' => $todoItems]);
+    }
+
+    public function overdueTasks(TasksGetRequest $request)
+    {
+        $dueDate = new Carbon();
+        $sortPriority = SortOrder::tryFrom($request->sort_priority) ?? null;
+
+        $todoItems = $this->taskRepo->getOverdueTasksBy($dueDate, $sortPriority);
+
+        return response()->json(['items' => $todoItems]);
+    }
 }

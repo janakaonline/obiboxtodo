@@ -1,9 +1,9 @@
 <template>
-    <PieChart :chartData="testData" />
+    <PieChart ref="pieChart" :chartData="pieChartData"/>
 </template>
 
 <script>
-import { defineComponent  } from 'vue';
+import {defineComponent} from 'vue';
 import {mapState} from 'vuex'
 import {PieChart} from 'vue-chart-3';
 import {Chart, registerables} from "chart.js";
@@ -12,27 +12,38 @@ Chart.register(...registerables);
 
 export default defineComponent({
     components: {PieChart},
-    setup(){
-        const completionOverviewData = await this.$store.dispatch('overview/loadCompletionOverview')
-        console.log(completionOverviewData)
-        const testData = {
-            labels: ['Paris', 'Nîmes', 'Toulon', 'Perpignan', 'Autre'],
-            datasets: [
-                {
-                    data: [30, 40, 60, 70, 5],
-                    backgroundColor: ['#77CEFF', '#0079AF', '#123E6B', '#97B0C4', '#A5C8ED'],
-                },
-            ],
-        };
-
-        return { testData };
+    computed: {
+        ...mapState({
+            message: state => state.overview.welcome,
+            completedOverviewData: state => state.overview.taskCompletionData.data
+        }),
+        pieChartData(){
+            const data = [0,0];
+            if(this.completedOverviewData){
+                data[0] = this.completedOverviewData.completed;
+                data[1] = this.completedOverviewData.todo;
+            }
+            return {
+                labels: ['Completed', 'Todo'],
+                datasets: [
+                    {
+                        data: data,
+                        backgroundColor: ['#4bbe03', '#af4c00'],
+                    },
+                ],
+            }
+        }
     },
-    computed: mapState({
-        message: state => state.overview.welcome
-    }),
-    methods:{
-        async loadCompletionChart(){
-            const completionOverviewData = await this.$store.dispatch('overview/loadCompletionOverview')
+    mounted() {
+        this.refreshStats();
+    },
+    methods: {
+        refreshStats() {
+            this.loadCompletionChart();
+        },
+        async loadCompletionChart() {
+            await this.$store.dispatch('overview/loadCompletionOverview')
+            this.$refs.pieChart.update();
         }
     }
 })

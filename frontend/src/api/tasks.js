@@ -5,6 +5,16 @@ export const getTasks = async (queryString) => {
     return resp.data.items;
 }
 
+export const getTodoTasks = async (queryString) => {
+    const resp = await axios.get(`http://localhost:8001/api/tasks/due-today?${queryString}`);
+    return resp.data.items;
+}
+
+export const getOverdueTasks = async (queryString) => {
+    const resp = await axios.get(`http://localhost:8001/api/tasks/overdue?${queryString}`);
+    return resp.data.items;
+}
+
 export const addTask = async (task) => {
     const resp = await axios.post(`http://localhost:8001/api/tasks`, task);
     return resp.data;

@@ -17,4 +17,11 @@ interface ITaskStatRepository
      * @return Collection collections of tasks retrieved
      */
     public function getTotalNumOfTasksUpToDateByCompletedState(Carbon $date): TaskCountOverview;
+
+    /**
+     * returns number of incompleted tasks grouped by the priority 
+     *
+     * @return Collection collections of tasks retrieved
+     */
+    public function getNumOfIncompletedTasksByPriority(): TaskCountOverview;
 }
