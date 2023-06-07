@@ -1,5 +1,13 @@
 <template>
-    <PieChart ref="chart" :chartData="chartData"/>
+    <div>
+        <v-card>
+            <v-card-title>Todo Tasks By Priority</v-card-title>
+            <v-card-text>
+                <PieChart ref="chart" :chartData="chartData"/>
+            </v-card-text>
+        </v-card>
+
+    </div>
 </template>
 
 <script>
@@ -36,10 +44,10 @@ export default defineComponent({
         }
     },
     mounted() {
-        this.loadChart();
+        this.refreshStats();
     },
     methods: {
-        async loadChart() {
+        async refreshStats() {
             await this.$store.dispatch('overview/loadTasksByPriorityOverview')
             this.$refs.chart.update();
         }

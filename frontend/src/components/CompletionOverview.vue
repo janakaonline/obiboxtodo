@@ -1,5 +1,10 @@
 <template>
-    <PieChart ref="pieChart" :chartData="pieChartData"/>
+    <v-card>
+        <v-card-title>Tasks Completion Overview</v-card-title>
+        <v-card-text>
+            <PieChart ref="chart" :chartData="chartData"/>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
@@ -17,7 +22,7 @@ export default defineComponent({
             message: state => state.overview.welcome,
             completedOverviewData: state => state.overview.taskCompletionData.data
         }),
-        pieChartData(){
+        chartData(){
             const data = [0,0];
             if(this.completedOverviewData){
                 data[0] = this.completedOverviewData.completed;
@@ -38,12 +43,9 @@ export default defineComponent({
         this.refreshStats();
     },
     methods: {
-        refreshStats() {
-            this.loadCompletionChart();
-        },
-        async loadCompletionChart() {
+        async refreshStats() {
             await this.$store.dispatch('overview/loadCompletionOverview')
-            this.$refs.pieChart.update();
+            this.$refs.chart.update();
         }
     }
 })

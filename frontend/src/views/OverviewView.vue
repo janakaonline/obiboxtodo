@@ -4,10 +4,10 @@
             <v-container>
                 <v-row>
                     <v-col cols="12" sm="6" >
-                        <completion-overview></completion-overview>
+                        <completion-overview ref="completionOverview"></completion-overview>
                     </v-col>
                     <v-col cols="12" sm="6" >
-                        <tasks-by-priority-overview></tasks-by-priority-overview>
+                        <tasks-by-priority-overview ref="priorityOverview"></tasks-by-priority-overview>
                     </v-col>
                 </v-row>
                 <v-row>
@@ -25,12 +25,12 @@
                                             <v-select
                                                 label="Priority"
                                                 density="compact"
-                                                :items="sortOptions.priority.options"
+                                                :items="todoSortOptions.priority.options"
                                                 item-title="name"
                                                 item-value="value"
                                                 variant="outlined"
-                                                v-model="sortOptions.priority.value"
-                                                @update:modelValue="refreshList"
+                                                v-model="todoSortOptions.priority.value"
+                                                @update:modelValue="refreshTodoList"
                                             ></v-select>
                                         </div>
                                         <task-list :items="todoItems" :loading-items="todoLoadingItems" @list-updated="refreshLists"/>
@@ -41,12 +41,12 @@
                                             <v-select
                                                 label="Priority"
                                                 density="compact"
-                                                :items="sortOptions.priority.options"
+                                                :items="overdueSortOptions.priority.options"
                                                 item-title="name"
                                                 item-value="value"
                                                 variant="outlined"
-                                                v-model="sortOptions.priority.value"
-                                                @update:modelValue="refreshList"
+                                                v-model="overdueSortOptions.priority.value"
+                                                @update:modelValue="refreshOverdueList"
                                             ></v-select>
                                         </div>
                                         <task-list :items="overdueItems" :loading-items="overdueLoadingItems" @list-updated="refreshLists"/>
@@ -83,7 +83,26 @@ export default defineComponent({
     data() {
         return {
             tab: null,
-            sortOptions: {
+            todoSortOptions: {
+                priority: {
+                    options: [
+                        {
+                            name: 'Any',
+                            value: '',
+                        },
+                        {
+                            name: 'High to Low',
+                            value: 'desc',
+                        },
+                        {
+                            name: 'Low to High',
+                            value: 'asc',
+                        },
+                    ],
+                    value: 'desc'
+                }
+            },
+            overdueSortOptions: {
                 priority: {
                     options: [
                         {
@@ -111,11 +130,13 @@ export default defineComponent({
         refreshLists(){
             this.refreshTodoList();
             this.refreshOverdueList();
+            this.$refs.completionOverview.refreshStats();
+            this.$refs.priorityOverview.refreshStats();
         },
         refreshTodoList() {
             const filters = {
                 sort: [
-                    {field: 'priority', 'order': this.sortOptions.priority.value},
+                    {field: 'priority', 'order': this.todoSortOptions.priority.value},
                 ]
             }
             this.$store.dispatch('todoList/loadTodoTasks', filters)
@@ -123,7 +144,7 @@ export default defineComponent({
         refreshOverdueList() {
             const filters = {
                 sort: [
-                    {field: 'priority', 'order': this.sortOptions.priority.value},
+                    {field: 'priority', 'order': this.overdueSortOptions.priority.value},
                 ]
             }
             this.$store.dispatch('todoList/loadOverdueTasks', filters)
