@@ -1,8 +1,13 @@
 import axios from "axios";
 
-export const getTasks = async () => {
-    const resp = await axios.get('http://localhost:8001/api/tasks');
+export const getTasks = async (queryString) => {
+    const resp = await axios.get(`http://localhost:8001/api/tasks?${queryString}`);
     return resp.data.items;
+}
+
+export const addTask = async (task) => {
+    const resp = await axios.post(`http://localhost:8001/api/tasks`, task);
+    return resp.data;
 }
 
 export const updateTask = async (task) => {

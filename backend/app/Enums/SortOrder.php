@@ -3,6 +3,7 @@
 namespace App\Enums;
 
 enum SortOrder: string{
-    case Assending = 'ASC';
-    case Desending = 'DESC';
+    case None = '';
+    case Assending = 'asc';
+    case Desending = 'desc';
 }

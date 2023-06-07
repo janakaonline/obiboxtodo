@@ -21,7 +21,7 @@ class TaskRepository implements ITaskRepository
      *
      * @return Collection collections of tasks retrieved
      */
-    public function getTasks(?string $searchTerm = null, ?TaskPriority $priority = null, ?bool $completed = null, ?SortOrder $sortCreatedAt = null): Collection
+    public function getTasks(?string $searchTerm = null, ?TaskPriority $priority = null, ?bool $completed = null, ?SortOrder $sortByDueDate = null, ?SortOrder $sortPriority = null): Collection
     {
 
         $model = Task::query();
@@ -41,8 +41,13 @@ class TaskRepository implements ITaskRepository
             $model->where('completed', $completed);
         }
 
-        if (!empty($sortCreatedAt)) {
-            $model->orderBy('created_at', $sortCreatedAt->value);
+        if (!empty($sortPriority)) {
+            $priorityOrderString = "'" . TaskPriority::Low->value . "', '" . TaskPriority::Medium->value . "', '" . TaskPriority::High->value . "'";
+            $model->orderByRaw("FIELD(priority, $priorityOrderString) {$sortPriority->value}");
+        }
+
+        if (!empty($sortByDueDate)) {
+            $model->orderBy('due_date', $sortByDueDate->value);
         }
 
         return $model->get();

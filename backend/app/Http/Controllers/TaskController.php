@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SortOrder;
 use App\Enums\TaskPriority;
 use App\Http\Requests\TaskPostRequest;
+use App\Http\Requests\TasksGetRequest;
 use App\Repositories\ITaskRepository;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,9 +22,14 @@ class TaskController extends Controller
     /**
      * Display a listing of the tasks.
      */
-    public function index()
+    public function index(TasksGetRequest $request)
     {
-        $todoItems = $this->taskRepo->getTasks();
+        $sortPriority = SortOrder::tryFrom($request->sort_priority) ?? null;
+        $sortDueDate = SortOrder::tryFrom($request->sort_due_date) ?? null;
+
+        $filterByCompleted = filter_var($request->filter_completed, FILTER_VALIDATE_BOOLEAN);
+
+        $todoItems = $this->taskRepo->getTasks(null, null, $filterByCompleted, $sortDueDate, $sortPriority);
 
         return response()->json(['items' => $todoItems]);
     }
@@ -32,10 +39,10 @@ class TaskController extends Controller
      */
     public function store(TaskPostRequest $request)
     {
-        $validatedData = $request->validated();
-        $dueDate = new Carbon($validatedData['due_date']);
+        $priority = TaskPriority::tryFrom($request->priority) ?? TaskPriority::Medium;
+        $dueDate = new Carbon($request->due_date);
 
-        $newTask = $this->taskRepo->create($validatedData->name, $validatedData->priority, $dueDate, $validatedData->description);
+        $newTask = $this->taskRepo->create($request->name, $priority, $dueDate, $request->description);
 
         return response()->json(['data' => $newTask], Response::HTTP_OK);
     }
@@ -45,17 +52,15 @@ class TaskController extends Controller
      */
     public function update(TaskPostRequest $request, int $id)
     {
-        $validatedData = $request->validated();
-
         $task = $this->taskRepo->getTaskById($id);
         if (is_null($task)) {
             return response()->json(['error' => 'task not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $priority = TaskPriority::tryFrom($validatedData['priority']) ?? TaskPriority::Medium;
-        $dueDate = new Carbon($validatedData['due_date']);
+        $priority = TaskPriority::tryFrom($request->priority) ?? TaskPriority::Medium;
+        $dueDate = new Carbon($request->due_date);
 
-        if (!$this->taskRepo->update($task, $validatedData['name'], $priority, $dueDate, $validatedData['description'])) {
+        if (!$this->taskRepo->update($task, $request->name, $priority, $dueDate, $request->description)) {
             return response()->json(['error' => 'task update failed'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 

@@ -1,6 +1,8 @@
 <template>
     <div>
-        <v-list-item>
+
+        <v-list-item >
+
             <v-list-item-title :class="[{'text-decoration-line-through': item.completed}]">
                 {{ item.name }}
             </v-list-item-title>
@@ -8,6 +10,8 @@
                 {{ item.description }}
             </v-list-item-subtitle>
             <template v-slot:prepend>
+                <v-icon class="priority-icon" :icon="taskPriorityIcon" :color="taskMoodColor"></v-icon>
+
                 <v-btn v-if="!item.completed"
                        class="ma-1"
                        density="comfortable"
@@ -39,60 +43,10 @@
                        @click.prevent="confirmDeletion = true"
                 ></v-btn>
             </template>
+            <div class="item-status-bar text-grey-darken-1 text-sm-body-2 text-right">Due by {{formattedDueDate}}</div>
         </v-list-item>
 
-        <v-dialog v-model="editMode" width="auto">
-            <v-sheet width="350" class="mx-auto" :color="editTaskMoodColor">
-                <v-form @submit.prevent>
-
-                    <v-text-field
-                        v-model="editableItem.name"
-                        label="Task Name"
-                    ></v-text-field>
-
-                    <v-textarea
-                        name="description"
-                        variant="filled"
-                        label="Description"
-                        auto-grow
-                        v-model="editableItem.description"
-                    ></v-textarea>
-
-
-                    <v-radio-group v-model="editableItem.priority" inline>
-                        <template v-slot:label>
-                            <div class="text-caption">Priority</div>
-                        </template>
-                        <v-radio
-                            label="High"
-                            color="red"
-                            value="high"
-                        ></v-radio>
-                        <v-radio
-                            label="Medium"
-                            color="orange"
-                            value="medium"
-                        ></v-radio>
-                        <v-radio
-                            label="Low"
-                            color="grey"
-                            value="low"
-                        ></v-radio>
-                    </v-radio-group>
-
-                    <div class="pa-2 d-flex ">
-                        <VueDatePicker class="justify-center" v-model="editableItem.due_date" inline auto-apply
-                                       :enable-time-picker="false"></VueDatePicker>
-                    </div>
-
-
-                    <div class="ma-3 justify-space-between d-flex">
-                        <v-btn color="primary" type="submit" @click.prevent="edit">Save</v-btn>
-                        <v-btn color="grey" class="ml-8" @click.prevent="closeEditDialog">Cancel</v-btn>
-                    </div>
-                </v-form>
-            </v-sheet>
-        </v-dialog>
+        <task-save-dialog @submit="edit" ref="editDialog"></task-save-dialog>
 
         <v-dialog v-model="confirmDeletion" width="auto">
             <v-card>
@@ -110,12 +64,14 @@
 
 <script>
 import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
+import '@vuepic/vue-datepicker/dist/main.css';
+import TaskSaveDialog from "./TaskSaveDialog.vue";
+import moment from 'moment';
 
 export default {
     name: "TaskItem",
     components: {
-        VueDatePicker
+        TaskSaveDialog
     },
     props: {
         item: Object,
@@ -139,21 +95,43 @@ export default {
                     break;
             }
             return color;
-        }
+        },
+        taskMoodColor() {
+            let color = 'orange';
+            switch (this.item.priority) {
+                case 'high':
+                    color = 'red';
+                    break;
+                case 'low':
+                    color = 'grey';
+                    break;
+            }
+            return color;
+        },
+        taskPriorityIcon() {
+            let icon = 'mdi-minus-circle';
+            switch (this.item.priority) {
+                case 'high':
+                    icon = 'mdi-arrow-up-circle';
+                    break;
+                case 'low':
+                    icon = 'mdi-arrow-down-circle';
+                    break;
+            }
+            return icon;
+        },
+        formattedDueDate(){
+            return moment(this.item.due_date).format('Do MMM, YYYY');
+        },
     },
     methods: {
         openEditDialog() {
-            this.editableItem = {...this.item};
-            this.editMode = true;
-
+            this.$refs.editDialog.open(this.item);
         },
-        closeEditDialog() {
-            this.editMode = false;
-        },
-        edit() {
-            this.$store.dispatch('todoList/edit', this.editableItem)
+        edit(editableItem) {
+            this.$store.dispatch('todoList/edit', editableItem)
                 .then(() => {
-                    this.editMode = false;
+                    this.$refs.editDialog.close();
                     this.$emit('updated');
                 })
         },
@@ -180,6 +158,11 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="sass">
+.priority-icon
+    position: absolute
+    margin-inline-end: 0
+    z-index: 2
+    top:5px
+    left:10px
 </style>

@@ -18,7 +18,7 @@ interface ITaskRepository
      *
      * @return Collection
      */
-    public function getTasks(?string $searchTerm = null, ?TaskPriority $priority = null, ?bool $completed = null, ?SortOrder $sortCreatedAt = null): Collection;
+    public function getTasks(?string $searchTerm = null, ?TaskPriority $priority = null, ?bool $completed = null, ?SortOrder $sortDueDate = null, ?SortOrder $sortPriority = null): Collection;
 
     /**
      * returns the task by the given ID

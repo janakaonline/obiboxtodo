@@ -16,6 +16,7 @@
     "@vuepic/vue-datepicker": "^5.2.0",
     "axios": "^1.4.0",
     "jest-environment-jsdom": "^29.5.0",
+    "moment": "^2.29.4",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0",
     "vuetify": "^3.3.2",
