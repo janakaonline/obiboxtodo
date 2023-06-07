@@ -1,11 +1,12 @@
 <template>
     <v-dialog v-model="show" width="auto">
         <v-sheet width="350" class="mx-auto" :color="editTaskMoodColor">
-            <v-form @submit.prevent>
+            <v-form @submit.prevent.stop="submitForm" ref="form">
 
                 <v-text-field
                     v-model="editableItem.name"
                     label="Task Name"
+                    :rules="rules.name"
                 ></v-text-field>
 
                 <v-textarea
@@ -45,7 +46,7 @@
 
 
                 <div class="ma-3 justify-space-between d-flex">
-                    <v-btn color="primary" type="submit" @click.prevent="$emit('submit', editableItem)">Save</v-btn>
+                    <v-btn color="primary" type="submit">Save</v-btn>
                     <v-btn color="grey" class="ml-8" @click.prevent="close">Cancel</v-btn>
                 </div>
             </v-form>
@@ -68,7 +69,16 @@ export default {
     data() {
         return {
             show: false,
-            editableItem: {}
+            editableItem: {},
+            rules:{
+                name: [
+                    value => {
+                        if (value) return true
+
+                        return 'You must enter a task name.'
+                    },
+                ],
+            }
         }
     },
     computed: {
@@ -86,6 +96,13 @@ export default {
         },
     },
     methods:{
+        async submitForm(){
+            this.$refs.form.resetValidation()
+            const validation = await this.$refs.form.validate();
+            if(validation.valid){
+                this.$emit('submit', this.editableItem)
+            }
+        },
         open(item){
             this.editableItem = {...item};
             this.show = true;

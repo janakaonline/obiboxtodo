@@ -5,11 +5,8 @@
             <v-row>
                 <v-col>
                     <div class="d-flex justify-end">
-                        <v-btn class="ma-1"
-                               color="primary"
-                               prepend-icon="mdi-plus-circle"
-                               @click="openCreateNewDialog"
-                        >Create Task
+                        <v-btn class="ma-1" color="primary" prepend-icon="mdi-plus-circle"
+                               @click="openCreateNewDialog">Create Task
                         </v-btn>
                     </div>
                 </v-col>
@@ -48,7 +45,8 @@
                                             @update:modelValue="refreshTodoList"
                                         ></v-select>
                                     </div>
-                                    <task-list :items="items" :loading-items="loadingItems" @list-updated="refreshLists"/>
+                                    <task-list :items="items" :loading-items="loadingItems"
+                                               @list-updated="refreshLists"/>
                                 </v-window-item>
 
                                 <v-window-item value="completed" class="pt-5">
@@ -74,7 +72,8 @@
                                             @update:modelValue="refreshCompletedList"
                                         ></v-select>
                                     </div>
-                                    <task-list :items="completedItems" :loading-items="loadingCompletedItems" @list-updated="refreshLists"/>
+                                    <task-list :items="completedItems" :loading-items="loadingCompletedItems"
+                                               @list-updated="refreshLists"/>
                                 </v-window-item>
                             </v-window>
                         </v-card-text>
@@ -84,15 +83,15 @@
         </v-container>
 
 
-
         <task-save-dialog @submit="addTask" ref="newTaskDialog"></task-save-dialog>
     </main>
 </template>
 
 <script>
+import {mapState} from "vuex";
+import moment from 'moment';
 import TaskList from '../components/TaskList.vue'
 import TaskSaveDialog from "../components/TaskSaveDialog.vue";
-import {mapState} from "vuex";
 
 export default {
     components: {
@@ -188,7 +187,8 @@ export default {
     methods: {
         openCreateNewDialog() {
             const newItem = {
-                priority: 'high'
+                priority: 'high',
+                due_date: moment().format(),
             };
             this.$refs.newTaskDialog.open(newItem);
         },
@@ -198,8 +198,11 @@ export default {
                     this.$refs.newTaskDialog.close();
                     this.refreshLists();
                 })
+                .catch(err => {
+                    console.log(err)
+                })
         },
-        refreshLists(){
+        refreshLists() {
             this.refreshTodoList()
             this.refreshCompletedList()
         },
