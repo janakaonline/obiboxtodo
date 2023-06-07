@@ -88,6 +88,9 @@ class TaskController extends Controller
         return response()->json(['data' => $task], Response::HTTP_OK);
     }
 
+    /**
+     * mark the task as completed
+     */
     public function makeAsComplete(int $id)
     {
         $task = $this->taskRepo->getTaskById($id);
@@ -104,6 +107,9 @@ class TaskController extends Controller
         return response()->json(['data' => $task], Response::HTTP_OK);
     }
 
+    /**
+     * mark the task as incomplete
+     */
     public function makeAsInComplete(int $id)
     {
         $task = $this->taskRepo->getTaskById($id);
@@ -120,6 +126,9 @@ class TaskController extends Controller
         return response()->json(['data' => $task], Response::HTTP_OK);
     }
 
+    /**
+     * Display all tasks which are due today.
+     */
     public function tasksDueToday(TasksGetRequest $request)
     {
         $dueDate = new Carbon();
@@ -130,6 +139,9 @@ class TaskController extends Controller
         return response()->json(['items' => $todoItems]);
     }
 
+    /**
+     * Display all the overdue tasks.
+     */
     public function overdueTasks(TasksGetRequest $request)
     {
         $dueDate = new Carbon();

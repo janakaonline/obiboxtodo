@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\ITaskStatRepository;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
+/**
+ * Resource controller for the overview stats
+ */
 class TaskOverviewController extends Controller
 {
     protected ITaskStatRepository $taskStatRepo;
@@ -15,6 +17,9 @@ class TaskOverviewController extends Controller
         $this->taskStatRepo = $taskStatRepo;
     }
 
+    /**
+     * Returns completion overview stat
+     */
     public function taskCompletionOverview()
     {
         $stats = $this->taskStatRepo->getTotalNumOfTasksUpToDateByCompletedState(Carbon::now());
@@ -22,6 +27,9 @@ class TaskOverviewController extends Controller
         return response()->json(['data' => $stats]);
     }
 
+    /**
+     * Returns tasks by priority stats
+     */
     public function tasksByPriorityOverview()
     {
         $stats = $this->taskStatRepo->getNumOfIncompletedTasksByPriority();
