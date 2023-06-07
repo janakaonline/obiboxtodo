@@ -6,7 +6,7 @@ services:
         user: userx
         uid: 1000
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: backend/Dockerfile
     image: todo-app-api-img
     container_name: todo-app-api
     restart: unless-stopped
@@ -41,6 +41,23 @@ services:
       SERVICE_NAME: mysql
     volumes:
       - './docker-compose/mysql:/docker-entrypoint-initdb.d'
+    networks:
+      - todoappnet
+  frontend:
+    build:
+      args:
+        user: userx
+        uid: 1000
+      context: ./
+      dockerfile: frontend/Dockerfile
+    image: todo-app-fe-img
+    container_name: todo-app-fe
+    restart: unless-stopped
+    ports:
+      - '8000:8080'
+    working_dir: /usr/src/app
+    volumes:
+      - './frontend:/usr/src/app'
     networks:
       - todoappnet
 networks:
