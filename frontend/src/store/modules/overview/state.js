@@ -1,3 +1,7 @@
 export default () => ({
-    welcome: 'hello',
+    taskCompletionData: {
+        loading: false,
+        error: null,
+        data: null
+    },
 })

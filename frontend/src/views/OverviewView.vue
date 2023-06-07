@@ -1,15 +1,23 @@
 <template>
-  <main>
-    <p>Hello there! {{this.message}}</p>
-  </main>
+    <main>
+        <div class="stats">
+            <completion-overview></completion-overview>
+        </div>
+    </main>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import {defineComponent} from 'vue';
+import {mapState} from 'vuex'
+import CompletionOverview from "../components/CompletionOverview.vue";
 
-export default {
-  computed: mapState({
-    message: state => state.overview.welcome
-  }),
-}
+export default defineComponent({
+    components: {CompletionOverview},
+    setup() {
+        return {};
+    },
+    computed: mapState({
+        message: state => state.overview.welcome
+    }),
+})
 </script>

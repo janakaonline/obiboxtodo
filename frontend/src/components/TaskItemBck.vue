@@ -63,6 +63,7 @@
 </template>
 
 <script>
+import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import TaskSaveDialog from "./TaskSaveDialog.vue";
 import moment from 'moment';

@@ -6,8 +6,8 @@
         </div>
 
         <nav class="d-flex justify-center">
-            <v-btn @click="$router.push('/')" class="bg-indigo ma-2"> List</v-btn>
-            <v-btn @click="$router.push('/overview')" class="bg-indigo ma-2"> Overview</v-btn>
+            <v-btn to="/" class="bg-indigo ma-2"> List</v-btn>
+            <v-btn to="/overview" class="bg-indigo ma-2"> Overview</v-btn>
         </nav>
     </header>
 

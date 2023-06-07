@@ -1,7 +1,7 @@
 import {getTasks, markTaskAsComplete, markTaskAsInComplete, removeTask, updateTask, addTask} from "../../../api/tasks";
 
 export const TASKS_LOAD_IN_PROGRESS = 'TASKS_LOAD_IN_PROGRESS'
-export const TASKS_LOAD_FAILED = 'LOAD_TASKS_FAILED'
+export const TASKS_LOAD_FAILED = 'TASKS_LOAD_FAILED'
 export const TASKS_LOAD_SUCCESSFUL = 'TASKS_LOAD_SUCCESSFUL'
 
 export const TASK_ACTION_FAILED = 'TASK_ACTION_FAILED'

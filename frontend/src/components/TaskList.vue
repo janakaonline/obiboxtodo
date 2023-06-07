@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <div v-if="loadingItems">Loading</div>
+    <div v-if="!loadingItems">
         <div class="sort-options">
             <v-select
                 label="Priority"
@@ -31,17 +32,30 @@
             >Create Task
             </v-btn>
         </div>
+        <!--<ui>
+            <li v-for="item in items">{{item.name}}</li>
+        </ui>-->
         <v-list lines="two">
-            <task-item v-for="item in items" :key="item.id" :item="item" @updated="loadTasks"></task-item>
+            <Suspense v-for="item in items" :key="item.id">
+                <task-item :item="item" @updated="loadTasks"></task-item>
+            </Suspense>
         </v-list>
-        <task-save-dialog @submit="addTask" ref="newTaskDialog"></task-save-dialog>
+        <Suspense v-for="item in items" :key="item.id">
+            <task-save-dialog @submit="addTask" ref="newTaskDialog"></task-save-dialog>
+        </Suspense>
     </div>
 </template>
 
 <script>
 import {mapState} from "vuex";
-import TaskItem from "../components/TaskItem.vue";
-import TaskSaveDialog from "./TaskSaveDialog.vue";
+import {defineAsyncComponent} from 'vue'
+
+const TaskItem = defineAsyncComponent(() =>
+    import('./TaskItem.vue')
+)
+const TaskSaveDialog = defineAsyncComponent(() =>
+    import('./TaskSaveDialog.vue')
+)
 
 export default {
     name: "TaskList",
@@ -91,6 +105,7 @@ export default {
     },
     computed: mapState({
         items: state => state.todoList.items,
+        loadingItems: state => state.todoList.loadingItems,
     }),
     mounted() {
         this.loadTasks();

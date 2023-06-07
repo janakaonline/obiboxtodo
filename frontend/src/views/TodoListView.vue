@@ -1,12 +1,17 @@
 <template>
     <main>
-        <task-list/>
+        <Suspense>
+            <task-list/>
+        </Suspense>
     </main>
 </template>
 
 <script>
-import TaskList from "../components/TaskList.vue";
+import {defineAsyncComponent} from 'vue'
 
+const TaskList = defineAsyncComponent(() =>
+    import('../components/TaskList.vue')
+)
 export default {
     components: {
         TaskList

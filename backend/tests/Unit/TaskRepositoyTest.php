@@ -94,19 +94,19 @@ class TaskRepositoyTest extends TestCase
         $this->assertCount(1, $result->toArray());
     }
 
-    public function test_should_sort_by_created_at()
+    public function test_should_sort_by_due_date()
     {
         Task::factory()->create([
             'name' => 'task 1',
-            'created_at' => '2023-01-01 00:00:00'
+            'due_date' => '2023-01-01 00:00:00'
         ]);
         Task::factory()->create([
             'name' => 'task 2',
-            'created_at' => '2023-10-01 00:00:00'
+            'due_date' => '2023-10-01 00:00:00'
         ]);
         Task::factory()->create([
             'name' => 'task 3',
-            'created_at' => '2023-02-20 00:00:00'
+            'due_date' => '2023-02-20 00:00:00'
         ]);
 
         $result = $this->repo->getTasks(null, null, null, SortOrder::Assending);
